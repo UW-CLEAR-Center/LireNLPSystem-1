@@ -26,7 +26,7 @@ To install, run the following code:
 ```{r}
 install.packages("devtools")
 library("devtools")
-devtools::install_github("wlktan/LireNLPSystem")
+devtools::install_github("chethanjjj/LireNLPSystem")
 library(LireNLPSystem)
 ```
 
