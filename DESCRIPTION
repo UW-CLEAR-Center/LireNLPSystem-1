@@ -1,7 +1,8 @@
 Package: LireNLPSystem
 Title: LireNLPSystem
-Version: 0.0.0.9000
-Authors@R: person("Katherine", "Tan", email = "wlktan@uw.edu", role = c("aut", "cre"))
+Version: 0.0.1.0000
+Authors@R: c(person("Katherine", "Tan", email = "wlktan@uw.edu", role = c("aut", "cre")),
+             person("Chethan", "Jujjavarapu", email = "cjujja@uw.edu", role="aut"))
 Description: A Natural Language Processing (NLP) system to identify 26 radiological findings from CSV files containing LIRE radiology report text.
 Depends: R (>= 3.3.0)
 License: What license is it under?
