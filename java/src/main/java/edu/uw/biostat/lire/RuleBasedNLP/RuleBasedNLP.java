@@ -1,9 +1,15 @@
 package edu.uw.biostat.lire.RuleBasedNLP;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.regex.Pattern;
-import com.opencsv.CSVReader;
 
 public class RuleBasedNLP{
 
@@ -18,50 +24,11 @@ public class RuleBasedNLP{
 	public static final String[] neg = {"1", "1"};
 	public static final int MAX_WINDOW = 15; // Number of spacings between negation and regular expression in a sentence
 
-	public static void main(String[] args) throws Exception {
-		
-		// LOAD DATA
-		
-		InputStream i = Thread.currentThread().getContextClassLoader().getResourceAsStream("example.csv");
-		CSVReader csvReader = new CSVReader(new InputStreamReader(i));
-		String[] fileLine;
-		List<String[]> lines = new ArrayList<String[]>();
-		while ((fileLine = csvReader.readNext()) != null) {
-			lines.add(fileLine);
-		}
-		String[][] array = new String[lines.size()][0];
-		lines.toArray(array);
-		csvReader.close();
-		
-		// TRANSPOSE ARRAY
-	    
-		int m = array.length;
-	    int n = array[0].length;
-	    String[][] transposedMatrix = new String[n][m];
-	    for(int x = 0; x < n; x++) {
-	        for(int y = 0; y < m; y++) {
-	            transposedMatrix[x][y] = array[y][x];
-	        }
-	    }
-		
-	    // RUN PIPELINE
-	    
-	    String[][] output = GetRegexNegex(transposedMatrix, 
-						    		      "imageid",
-						    		      "preprocessed_findings",
-						    		      "preprocessed_impression",
-						    		      "any_degeneration");
-	    
-	    // PRINT RESULTS
-	    
-	    System.out.println(Arrays.deepToString(output));
-	}
-	
-	public static String[][] GetRegexNegex(String[][] inputDF,
-									String imageid,
-									String bodyText,
-									String impressionText,
-									String findings_longstring) throws Exception {
+	public String[][] GetRegexNegex(String[][] inputDF,
+			String imageid,
+			String bodyText,
+			String impressionText,
+			String findings_longstring) throws Exception{
 
 		/* Convert 2D Array --> ArrayList (due to the rJava interface requiring Array
 		 * and cannot use ArrayList) */

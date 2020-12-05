@@ -1,8 +1,6 @@
 package edu.uw.biostat.lire.RuleBasedNLP;
 
-//import java.text.BreakIterator;
-import opennlp.tools.sentdetect.*; // https://www.tutorialspoint.com/opennlp/index.htm
-import java.io.*;
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,10 +27,6 @@ public class Regex {
 			String section_of_sentence) throws Exception {
 		
 		if(text == null) text = "NA"; // Turns null to a String
-
-		/*
-		// BREAK ITERATOR IMPLEMENTATION
-		
 		BreakIterator splitIntoSentences = BreakIterator.getSentenceInstance();
 		splitIntoSentences.setText(text);
 		int index = 0;
@@ -51,29 +45,9 @@ public class Regex {
 		
 			index = splitIntoSentences.current(); // update to next sentence
 		}
-		*/
-		
-		// APACHE OPEN-NLP IMPLEMENTATION (an NLP-based method to identify sentences)
-		
-		// 	load the English version of the sentence detection model (source: http://opennlp.sourceforge.net/models-1.5/)
-		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("en-sent.bin");
-		//	set up the model
-		SentenceModel model = new SentenceModel(inputStream);
-        SentenceDetectorME detector = new SentenceDetectorME(model);
-        //	get the sentences
-        String sentences[] = detector.sentDetect(text);
-        //	analyze each sentence for the findings
-        for (String sentence : sentences) {
-			RegexSentenceLevel(imageid, 
-							   sentence.toLowerCase(), 
-							   finding, 
-							   keywords, 
-							   neut, 
-							   pos, 
-							   neg, 
-							   section_of_sentence); // Runs sentence level analysis
-        }
+
 	}
+
 
 	// Method to find REGEX, NEGEX variables at the sentence level
 	private void RegexSentenceLevel(String imageid, 
