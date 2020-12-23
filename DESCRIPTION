@@ -14,4 +14,7 @@ Imports: rJava,
     tidyr,
     quanteda,
     caret,
-    xlsx
+    xlsx,
+    ROCR,
+    PRROC,
+    lattice
