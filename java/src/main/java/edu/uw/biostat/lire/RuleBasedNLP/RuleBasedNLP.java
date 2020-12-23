@@ -18,6 +18,7 @@ public class RuleBasedNLP{
 	public static final String[] neg = {"1", "1"};
 	public static final int MAX_WINDOW = 15; // Number of spacings between negation and regular expression in a sentence
 
+	/*
 	public static void main(String[] args) throws Exception {
 		
 		// LOAD DATA
@@ -56,6 +57,7 @@ public class RuleBasedNLP{
 	    
 	    System.out.println(Arrays.deepToString(output));
 	}
+	*/
 	
 	public static String[][] GetRegexNegex(String[][] inputDF,
 									String imageid,
