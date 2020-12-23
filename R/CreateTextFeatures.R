@@ -23,61 +23,60 @@
 #' @examples
 #' CreateTextFeatures(segmented.reports)
 
-CreateTextFeatures <- function(segmented.reports,
+CreateTextFeatures = function(segmented.reports,
+                               n_gram_length = 1,
                                id_col = "imageid",
-                               text.cols = c("body","impression"),
+                               text.cols = c("findings","impression"),
                                all.stop.words = setdiff(stopwords(), c("no", "not", "nor")),
                                finding.dictionary = NULL,
                                docfreq = "prop",
-                               min_doc_prop = 0,
-                               max_doc_prop = 1,
+                               min_doc_prop = 0.005,
+                               max_doc_prop = 0.95,
                                termfreq = "count",
                                min_term_freq = 1,
                                max_term_freq = NULL,
                                tf_type = "boolean",
-                               df_type = "unary",
-                               n_gram_length = 1){
+                               df_type = "unary"){
   dfm.list <- list()
   ### create feature matrix for each text column
-    for(col in 1:length(text.cols)){
-
-      ### create feature matrix
-      this.dfm <- quanteda::corpus(as.character(segmented.reports[,text.cols[col]]),
-                                   docnames = segmented.reports[,id_col]) %>%
-        ## Make feature matrix
-        quanteda::dfm(., language = "english",
-                      tolower = TRUE,
-                      stem = TRUE,
-                      remove = all.stop.words,
-                      thesaurus = finding.dictionary,
-                      valuetype = "glob",
-                      remove_punct = TRUE,
-                      remove_symbols = TRUE,
-                      remove_separators = TRUE,
-                      remove_twitter = TRUE,
-                      remove_hyphens = FALSE, # if TRUE, self-storage becomes (self, storage)
-                      remove_url = TRUE,
-                      ngrams = n_gram_length) %>%
-        #### remove most frequent and sparse words
-        quanteda::dfm_trim(.,
-                           min_docfreq = min_doc_prop,
-                           max_docfreq = max_doc_prop,
-                           docfreq_type = docfreq) %>%
-        quanteda:dfm_tfidf(scheme_tf = tf_type, # change count to binary
-                           scheme_df = df_type) %>%
-        as.data.frame(.) %>%
-        dplyr::rename(imageid = document)
-
-      colnames(this.dfm)[2:ncol(this.dfm)] <- paste(toupper(text.cols[col]),
-                                                    colnames(this.dfm)[2:ncol(this.dfm)],
-                                                    sep = "_")
-      print(dim(this.dfm))
-      dfm.list[[length(dfm.list) + 1]] <- this.dfm
+  for(col in 1:length(text.cols)){
+    ### create feature matrix
+    this.dfm = quanteda::corpus(as.character(segmented.reports[,text.cols[col]]),
+                                docnames = segmented.reports[,id_col]) %>%
+      quanteda::tokens(.,
+                       remove_punct=TRUE,
+                       remove_symbols=TRUE,
+                       remove_separators=TRUE,
+                       split_hyphens=FALSE,
+                       remove_url=TRUE) %>%
+      quanteda::tokens_ngrams(., n_gram_length) %>%
+      quanteda::dfm(., language = "english",
+                    tolower = TRUE,
+                    stem = TRUE,
+                    remove = all.stop.words,
+                    thesaurus = finding.dictionary,
+                    valuetype = "glob") %>%
+      #### remove most frequent and sparse words
+      quanteda::dfm_trim(.,
+                         min_docfreq = min_doc_prop,
+                         max_docfreq = max_doc_prop,
+                         docfreq_type = docfreq) %>%
+      dfm_tfidf(., scheme_tf = tf_type, # change count to binary
+                scheme_df = df_type)
+    features = colnames(this.dfm)
+    ids = docnames(this.dfm)
+    this.dfm.df = data.frame("imageid"=ids)
+    for (feature in features) {
+      this.dfm.df[,feature] = this.dfm[,feature] %>% as.vector(.)
     }
-
+    colnames(this.dfm.df)[2:ncol(this.dfm.df)] <- paste(toupper(text.cols[col]),
+                                                        colnames(this.dfm.df)[2:ncol(this.dfm.df)],
+                                                        sep = "_")
+    print(dim(this.dfm.df))
+    dfm.list[[length(dfm.list) + 1]] <- this.dfm.df
+  }
   ## Combine features into the same document feature matrix
   segmented.reports <- do.call(left_join, dfm.list)
-
   return(segmented.reports)
 }
 

@@ -4,16 +4,17 @@
 \alias{CreateTextFeatures}
 \title{Creates text-based features from a radiology report corpus}
 \usage{
-CreateTextFeatures(segmented.reports, id_col = "imageid",
-  text.cols = c("body", "impression"),
+CreateTextFeatures(segmented.reports, n_gram_length = 1,
+  id_col = "imageid", text.cols = c("findings", "impression"),
   all.stop.words = setdiff(stopwords(), c("no", "not", "nor")),
-  finding.dictionary = NULL, docfreq = "prop", min_doc_prop = 0,
-  max_doc_prop = 1, termfreq = "count", min_term_freq = 1,
-  max_term_freq = NULL, tf_type = "boolean", df_type = "unary",
-  n_gram_length = 1)
+  finding.dictionary = NULL, docfreq = "prop", min_doc_prop = 0.005,
+  max_doc_prop = 0.95, termfreq = "count", min_term_freq = 1,
+  max_term_freq = NULL, tf_type = "boolean", df_type = "unary")
 }
 \arguments{
 \item{segmented.reports}{Input data frame with}
+
+\item{n_gram_length}{Unigram, bigram, or trigram features; defaults to 3 (trigrams)}
 
 \item{id_col}{The ID column in segmented.reports, defaults to imageid}
 
@@ -36,8 +37,6 @@ CreateTextFeatures(segmented.reports, id_col = "imageid",
 \item{tf_type}{See quanteda::dfm_weight; One of "count", "prop", "propmax", "logcount", "boolean", "augmented", "logave"}
 
 \item{df_type}{See quanteda::docfreq; One of "count", "inverse", "inversemax", "inverseprob", "unary"}
-
-\item{n_gram_length}{Unigram, bigram, or trigram features; defaults to 3 (trigrams)}
 }
 \value{
 A document frequency matrix with each row as a unique report,
