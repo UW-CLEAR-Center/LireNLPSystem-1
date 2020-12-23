@@ -7,8 +7,8 @@
 CreateTextFeatures(segmented.reports, n_gram_length = 1,
   id_col = "imageid", text.cols = c("findings", "impression"),
   all.stop.words = setdiff(stopwords(), c("no", "not", "nor")),
-  finding.dictionary = NULL, docfreq = "prop", min_doc_prop = 0.005,
-  max_doc_prop = 0.95, termfreq = "count", min_term_freq = 1,
+  finding.dictionary = NULL, docfreq = "prop", min_doc_prop = 0,
+  max_doc_prop = 1, termfreq = "count", min_term_freq = 1,
   max_term_freq = NULL, tf_type = "boolean", df_type = "unary")
 }
 \arguments{
