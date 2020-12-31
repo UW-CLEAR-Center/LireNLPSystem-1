@@ -101,6 +101,8 @@ These functions together creates the workflow for the NLP system for the LIRE pr
 
 ## Preprocessing
 
+The purpose of this section is isolate the different sections in a radiology report, so that we can use the Finding and Impression sections for the rest of the pipeline.
+
 <a name="MainR"></a>
 
 ## Main R functions
