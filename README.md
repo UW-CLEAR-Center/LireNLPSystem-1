@@ -82,7 +82,9 @@ You may also try searching for "configuring rJava on Mac" on the internet.
 
 ## Overview
 
-![alt text for screen readers](images/Pipeline.png "Text to show on mouseover")
+![](images/Pipeline.png "Pipeline")
+
+The purpose of the pipeline is to classify your reports for the 26 findings from [Tan et al.](https://pubmed.ncbi.nlm.nih.gov/29605561/).
 
 There are five main R functions in this package:  
 
