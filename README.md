@@ -14,7 +14,7 @@
     + [CreateTextFeatures](#CreateTextFeatures)
 * [Train/Test](#TrainTest)
     + [runMlMethod](#runMlMethod)
-* [Apply Our Weights](#OurWeights)
+* [Apply Weights](#Weights)
     + [MachineLearningNLP](#MachineLearningNLP)
 * [Advanced usage](#AdvancedUsage)
     + [Modifying source Java code](#ModifyJavaCode)
@@ -263,9 +263,9 @@ text.dfm <- unigrams %>%
 
 ```
 
-<a name="OurWeights"></a>
+<a name="Weights"></a>
 
-## Apply Our Weights
+## Apply Weights
 
 The purpose of this section is to apply our weights to your feature matrix and classify each report.
 
