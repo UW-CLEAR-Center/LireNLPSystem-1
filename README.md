@@ -267,7 +267,7 @@ text.dfm <- unigrams %>%
 
 ## Apply Weights
 
-The purpose of this section is to apply our weights to your feature matrix and classify each report.
+The purpose of this section is to apply weights to your feature matrix and classify each report.
 
 <a name="MachineLearningNLP"></a>
 
