@@ -9,9 +9,13 @@
 * [Preprocessing](#Preprocessing)
     + [SectionSegmentation](#SectionSegmentation)
 * [Featurization](#Featurization)
-    + [RuleBasedNLP_JavaSentence](#RuleBasedNLP_JavaSentence)
-    + [RuleBasedNLP](#RuleBasedNLP)
-    + [CreateTextFeatures](#CreateTextFeatures)
+    + [Rules] (#Rules)
+        + [RuleBasedNLP_JavaSentence](#RuleBasedNLP_JavaSentence)
+        + [RuleBasedNLP](#RuleBasedNLP)
+    + [N-Grams](#Ngrams)
+        + [CreateTextFeatures](#CreateTextFeatures)
+    + [Document Embeddings](#DocumentEmbeddings)
+    + [Controlled Vocabulary](#ControlledVocabulary)
 * [Train/Test](#TrainTest)
     + [runMlMethod](#runMlMethod)
 * [Apply Weights](#Weights)
@@ -152,9 +156,13 @@ View(segmented.reports)
 
 The purpose of this section is to convert our free-text information into a format that our ML model can use. For this pipeline, we convert our text into rule results and n-grams.
 
+<a name="Rules"></a>
+
+### Rules
+
 <a name="RuleBasedNLP_JavaSentence"></a>
 
-### RuleBasedNLP_JavaSentence
+#### RuleBasedNLP_JavaSentence
 
 This function takes in a data frame, with at the minimum these columns:
 
@@ -201,7 +209,7 @@ regex.df.java <- RuleBasedNLP_JavaSentence(segmented.reports,
 
 <a name="RuleBasedNLP"></a>
 
-### RuleBasedNLP
+#### RuleBasedNLP
 
 This function takes in the sentence-by-sentence output of the ```RuleBasedNLP_JavaSentence``` function, and aggregates over all sentences to get a report level prediction. For every finding, the logic is as follows:
 
@@ -228,10 +236,13 @@ regex.df.wide <- regex.df.list$regex.df.wide
 rules.nlp.df <- regex.df.list$rules.nlp.df
 
 ```
+<a name="Ngrams"></a>
+
+### N-Grams
 
 <a name="CreateTextFeatures"></a>
 
-### CreateTextFeatures
+#### CreateTextFeatures
 
 This function takes a data frame with at the minimum these columns:
 
@@ -262,6 +273,16 @@ text.dfm <- unigrams %>%
   inner_join(trigrams, by = "imageid")
 
 ```
+
+<a name="DocumentEmbeddings"></a>
+
+### Document Embeddings
+
+<a name="ControlledVocabulary"></a>
+
+### Controlled Vocabulary
+
+-INSERT LINK-
 
 <a name="Weights"></a>
 
