@@ -9,7 +9,7 @@
 * [Preprocessing](#Preprocessing)
     + [SectionSegmentation](#SectionSegmentation)
 * [Featurization](#Featurization)
-    + [Rules] (#Rules)
+    + [Rules](#Rules)
         + [RuleBasedNLP_JavaSentence](#RuleBasedNLP_JavaSentence)
         + [RuleBasedNLP](#RuleBasedNLP)
     + [N-Grams](#Ngrams)
