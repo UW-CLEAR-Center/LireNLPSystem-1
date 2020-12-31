@@ -6,6 +6,7 @@
 * [Installation](#Installation)
     + [Troubleshoot: Configuring rJava on Mac](#Troubleshoot)
 * [Overview](#Overview)
+* [Preprocessing](#Preprocessing)
 * [Main R functions](#MainR)
     + [SectionSegmentation](#SectionSegmentation)
     + [RuleBasedNLP_JavaSentence](#RuleBasedNLP_JavaSentence)
@@ -95,6 +96,10 @@ There are five main R functions in this package:
 * [MachineLearningNLP](#MachineLearningNLP)
 
 These functions together creates the workflow for the NLP system for the LIRE project. The NLP system includes the 26 findings described in Tan et. all (Academic Radiology, 2018), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list.
+
+<a name="Preprocessing"></a>
+
+## Preprocessing
 
 <a name="MainR"></a>
 
