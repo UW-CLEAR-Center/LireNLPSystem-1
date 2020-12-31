@@ -82,7 +82,7 @@ You may also try searching for "configuring rJava on Mac" on the internet.
 
 ## Overview
 
-<img src="images/pipeline.png">
+![alt text for screen readers](images/pipeline.png "Text to show on mouseover")
 
 There are five main R functions in this package:  
 
