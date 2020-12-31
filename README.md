@@ -9,12 +9,16 @@
 * [Preprocessing](#Preprocessing)
     + [SectionSegmentation](#SectionSegmentation)
 * [Featurization](#Featurization)
-    + [RuleBasedNLP_JavaSentence](#RuleBasedNLP_JavaSentence)
-    + [RuleBasedNLP](#RuleBasedNLP)
-    + [CreateTextFeatures](#CreateTextFeatures)
+    + [Rules](#Rules)
+        + [RuleBasedNLP_JavaSentence](#RuleBasedNLP_JavaSentence)
+        + [RuleBasedNLP](#RuleBasedNLP)
+    + [N-Grams](#Ngrams)
+        + [CreateTextFeatures](#CreateTextFeatures)
+    + [Document Embeddings](#DocumentEmbeddings)
+    + [Controlled Vocabulary](#ControlledVocabulary)
 * [Train/Test](#TrainTest)
     + [runMlMethod](#runMlMethod)
-* [Apply Our Weights](#OurWeights)
+* [Apply Weights](#Weights)
     + [MachineLearningNLP](#MachineLearningNLP)
 * [Advanced usage](#AdvancedUsage)
     + [Modifying source Java code](#ModifyJavaCode)
@@ -86,7 +90,8 @@ You may also try searching for "configuring rJava on Mac" on the internet.
 
 ## Overview
 
-The purpose of the pipeline is to classify your reports for the 26 findings described in [Tan et. al](https://www.academicradiology.org/article/S1076-6332(18)30121-1/fulltext), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list. The pipeline will *preprocess* and *featurize* your reports. However, after these steps there are two possible paths to go down. You can either *train/test* your own model or *apply our weights*.
+The purpose of the pipeline is to classify your reports for the 26 findings described in [Tan et. al](https://www.academicradiology.org/article/S1076-6332(18)30121-1/fulltext), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list. The pipeline will *preprocess* and *featurize* your reports. However, after these steps there are two possible paths to go down. You can either *train/test* your own model with it's own feature weights or *apply our weights*.
+
 ![](images/Pipeline.png "Pipeline")
 
 There are six main R functions in this package:  
@@ -151,9 +156,13 @@ View(segmented.reports)
 
 The purpose of this section is to convert our free-text information into a format that our ML model can use. For this pipeline, we convert our text into rule results and n-grams.
 
+<a name="Rules"></a>
+
+### Rules
+
 <a name="RuleBasedNLP_JavaSentence"></a>
 
-### RuleBasedNLP_JavaSentence
+#### RuleBasedNLP_JavaSentence
 
 This function takes in a data frame, with at the minimum these columns:
 
@@ -200,7 +209,7 @@ regex.df.java <- RuleBasedNLP_JavaSentence(segmented.reports,
 
 <a name="RuleBasedNLP"></a>
 
-### RuleBasedNLP
+#### RuleBasedNLP
 
 This function takes in the sentence-by-sentence output of the ```RuleBasedNLP_JavaSentence``` function, and aggregates over all sentences to get a report level prediction. For every finding, the logic is as follows:
 
@@ -227,10 +236,13 @@ regex.df.wide <- regex.df.list$regex.df.wide
 rules.nlp.df <- regex.df.list$rules.nlp.df
 
 ```
+<a name="Ngrams"></a>
+
+### N-Grams
 
 <a name="CreateTextFeatures"></a>
 
-### CreateTextFeatures
+#### CreateTextFeatures
 
 This function takes a data frame with at the minimum these columns:
 
@@ -262,11 +274,35 @@ text.dfm <- unigrams %>%
 
 ```
 
-<a name="OurWeights"></a>
+<a name="DocumentEmbeddings"></a>
 
-## Apply Our Weights
+### Document Embeddings
 
-The purpose of this section is to apply our weights to your feature matrix and classify each report.
+-INSERT INFO-
+
+<a name="ControlledVocabulary"></a>
+
+### Controlled Vocabulary
+
+-INSERT INFO-
+
+<a name="TrainTest"></a>
+
+## Train/Test
+
+-INSERT INFO-
+
+<a name="runMlMethod"></a>
+
+### runMlMethod
+
+-INSERT INFO-
+
+<a name="Weights"></a>
+
+## Apply Weights
+
+The purpose of this section is to apply weights to your feature matrix and classify each report.
 
 <a name="MachineLearningNLP"></a>
 
