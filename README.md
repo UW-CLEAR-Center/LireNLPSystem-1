@@ -286,6 +286,18 @@ text.dfm <- unigrams %>%
 
 -INSERT INFO-
 
+<a name="TrainTest"></a>
+
+## Train/Test
+
+-INSERT INFO-
+
+<a name="runMlMethod"></a>
+
+### runMlMethod
+
+-INSERT INFO-
+
 <a name="Weights"></a>
 
 ## Apply Weights
