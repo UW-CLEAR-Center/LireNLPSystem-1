@@ -83,7 +83,7 @@ You may also try searching for "configuring rJava on Mac" on the internet.
 
 ## Overview
 
-The purpose of the pipeline is to classify your reports for the 26 findings from [Tan et al.](https://pubmed.ncbi.nlm.nih.gov/29605561/). The pipeline will preprocess and featurize your reports. However, after these steps there are two possible paths to go down. You can either train/test your own model or apply our weights. In this tutorial we will through each part of the pipeline.
+The purpose of the pipeline is to classify your reports for the 26 findings described in Tan et. all (Academic Radiology, 2018), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list. The pipeline will preprocess and featurize your reports. However, after these steps there are two possible paths to go down. You can either train/test your own model or apply our weights. In this tutorial we will through each part of the pipeline.
 
 ![](images/Pipeline.png "Pipeline")
 
@@ -94,8 +94,9 @@ There are five main R functions in this package:
 * [RuleBasedNLP](#RuleBasedNLP)
 * [CreateTextFeatures](#CreateTextFeatures)
 * [MachineLearningNLP](#MachineLearningNLP)
+* [runMlMethod](#runMlMethod)
 
-These functions together creates the workflow for the NLP system for the LIRE project. The NLP system includes the 26 findings described in Tan et. all (Academic Radiology, 2018), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list.
+These functions together creates the workflow for the NLP system for the LIRE project.
 
 <a name="Preprocessing"></a>
 
