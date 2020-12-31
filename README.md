@@ -262,7 +262,7 @@ text.dfm <- unigrams %>%
 
 ```
 
-<a name="Apply Our Weights"></a>
+<a name="OurWeights"></a>
 
 ## Apply Our Weights
 
