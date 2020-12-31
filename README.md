@@ -145,53 +145,11 @@ View(segmented.reports)
 
 ```
 
+<a name="Featurization"></a>
 
+## Featurization
 
-
-
-
-
-
-<a name="MainR"></a>
-
-## Main R functions
-
-<a name="SectionSegmentation"></a>
-
-### SectionSegmentation
-
-This function takes in a data frame, and segments the ```imagereporttext``` column into the following sections: ```History```, ```Exam```, ```Comparison```, ```Technique```, ```Body```, ```Impression```, ```Datetime```. Some of these sections may be empty. This code is developed and validated ONLY for the four LIRE sites:
-
-* site = 1: Kaiser Permanente Washington (previously Group Health)
-* site = 2: Kaiser Permanente Northen California
-* site = 3: Henry Ford
-* site = 4: Mayo Clinic
-
-The default is ```site = 2```. If you are NOT using LIRE reports, the algorithm may be inaccurate.
-
-Example usage:
-```{r}
-
-### This is fake data.
-text.df <- data.frame(patientID = c("W231", "W2242", "W452", "5235"),
-                           examID = c("631182", "1226", "2090", "1939"),
-                           siteID = c(2,2,2,2),
-                           imageTypeID = c(1,3,1,3),
-                           imagereporttext = c("** HISTORY **: Progressive radicular symptoms for 8 weeks Comparison study: None 
-                                               ** FINDINGS **: Dextroconvex scoliosis with apex at L3. 
-                                               ** IMPRESSION **: Scoliosis present.",
-                                               "** FINDINGS **: Disk height loss is present focally. 
-                                               ** IMPRESSION **:  Mild to moderate broad-based disc bulge.",
-                                               "** FINDINGS **: canal stenosis and mild narrowing of the left latera. 
-                                               ** IMPRESSION **: mild bilateral foraminal narrowing.",
-                                               "** FINDINGS **: Disc unremarkable. 
-                                               ** IMPRESSION **:  Foraminal stenosis."))
-
-
-segmented.reports <- SectionSegmentation(text.df, site = 2)
-View(segmented.reports)
-
-```
+The purpose of this section is to convert our free-text information into a format that our ML model can use. For this pipeline, we convert our text into rule results and n-grams.
 
 <a name="RuleBasedNLP_JavaSentence"></a>
 
@@ -303,6 +261,12 @@ text.dfm <- unigrams %>%
   inner_join(trigrams, by = "imageid")
 
 ```
+
+<a name="Apply Our Weights"></a>
+
+## Apply Our Weights
+
+The purpose of this section is to apply our weights to your feature matrix and classify each report.
 
 <a name="MachineLearningNLP"></a>
 
