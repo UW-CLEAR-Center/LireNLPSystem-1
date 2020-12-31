@@ -278,11 +278,13 @@ text.dfm <- unigrams %>%
 
 ### Document Embeddings
 
+-INSERT INFO-
+
 <a name="ControlledVocabulary"></a>
 
 ### Controlled Vocabulary
 
--INSERT LINK-
+-INSERT INFO-
 
 <a name="Weights"></a>
 
