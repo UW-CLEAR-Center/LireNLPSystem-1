@@ -10,8 +10,6 @@
 #' @param outpath string indicating outpath to write results to to
 #' @keywords runMLMethod
 #' @import caret
-#' @import ROCR
-#' @import PRROC
 #' @import lattice
 #' @export
 #' @return a list of 3 dataframes: metrics (performance metrics for train and test), predictions (predictions on train and test), model's features and coefficients
@@ -95,16 +93,16 @@ runMLMethod = function(finding,
   control = trainOutput$predProb[trainOutput$trueClass == "X0"]
   
   ##### ROC
-  roc = roc.curve(scores.class0 = case, scores.class1 = control, curve = T)
-  try(png(paste0(outpath,"/trainROC.png")))
-  try(plot(roc))
-  try(dev.off())
+  # roc = roc.curve(scores.class0 = case, scores.class1 = control, curve = T)
+  # try(png(paste0(outpath,"/trainROC.png")))
+  # try(plot(roc))
+  # try(dev.off())
   
   ##### Precision-Recall
-  #try(png(paste0(outpath, "/trainPrecisionRecall.png")))
-  #pr = pr.curve(scores.class0 = case, scores.class1 = control, curve = T)
-  #try(plot(pr))
-  #try(dev.off())
+  # try(png(paste0(outpath, "/trainPrecisionRecall.png")))
+  # pr = pr.curve(scores.class0 = case, scores.class1 = control, curve = T)
+  # try(plot(pr))
+  # try(dev.off())
   
   #### GET OPTIMAL CUT-OFF
   if(metric == "f"){ # For F1, find cut off that gives highest F1 score
@@ -162,16 +160,16 @@ runMLMethod = function(finding,
   control = testOutput$predProb[testOutput$trueClass == "X0"]
   
   ##### ROC
-  roc = roc.curve(scores.class0 = case, scores.class1 = control, curve = T)
-  try(png(paste0(outpath,"/testROC.png")))
-  try(plot(roc))
-  try(dev.off())
+  # roc = roc.curve(scores.class0 = case, scores.class1 = control, curve = T)
+  # try(png(paste0(outpath,"/testROC.png")))
+   #try(plot(roc))
+  # try(dev.off())
   
   ##### Precision-Recall
-  #try(png(paste0(outpath, "/testPrecisionRecall.png")))
-  #pr = pr.curve(scores.class0 = case, scores.class1 = control, curve = T)
-  #try(plot(pr))
-  #try(dev.off())
+  # try(png(paste0(outpath, "/testPrecisionRecall.png")))
+  # pr = pr.curve(scores.class0 = case, scores.class1 = control, curve = T)
+  # try(plot(pr))
+  # try(dev.off())
   
   ### EVALUATION METRICS
   trainMetric = CalcMetrics(test = trainOutput$predClass, 
