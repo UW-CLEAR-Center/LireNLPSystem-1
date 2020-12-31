@@ -81,6 +81,9 @@ You may also try searching for "configuring rJava on Mac" on the internet.
 <a name="Overview"></a>
 
 ## Overview
+
+<img src="images/pipeline.png">
+
 There are five main R functions in this package:  
 
 * [SectionSegmentation](#SectionSegmentation)
