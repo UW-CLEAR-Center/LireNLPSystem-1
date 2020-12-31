@@ -7,11 +7,14 @@
     + [Troubleshoot: Configuring rJava on Mac](#Troubleshoot)
 * [Overview](#Overview)
 * [Preprocessing](#Preprocessing)
-* [Main R functions](#MainR)
     + [SectionSegmentation](#SectionSegmentation)
+* [Featurization](#Featurization)
     + [RuleBasedNLP_JavaSentence](#RuleBasedNLP_JavaSentence)
     + [RuleBasedNLP](#RuleBasedNLP)
     + [CreateTextFeatures](#CreateTextFeatures)
+* [Train/Test](#TrainTest)
+    + [runMlMethod](#runMlMethod)
+* [Apply Our Weights](#OurWeights)
     + [MachineLearningNLP](#MachineLearningNLP)
 * [Advanced usage](#AdvancedUsage)
     + [Modifying source Java code](#ModifyJavaCode)
@@ -83,11 +86,10 @@ You may also try searching for "configuring rJava on Mac" on the internet.
 
 ## Overview
 
-The purpose of the pipeline is to classify your reports for the 26 findings described in [Tan et. al](https://www.academicradiology.org/article/S1076-6332(18)30121-1/fulltext), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list. The pipeline will preprocess and featurize your reports. However, after these steps there are two possible paths to go down. You can either train/test your own model or apply our weights. In this tutorial we will through each part of the pipeline.
-
+The purpose of the pipeline is to classify your reports for the 26 findings described in [Tan et. al](https://www.academicradiology.org/article/S1076-6332(18)30121-1/fulltext), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list. The pipeline will *preprocess* and *featurize* your reports. However, after these steps there are two possible paths to go down. You can either *train/test* your own model or *apply our weights*.
 ![](images/Pipeline.png "Pipeline")
 
-There are five main R functions in this package:  
+There are six main R functions in this package:  
 
 * [SectionSegmentation](#SectionSegmentation)
 * [RuleBasedNLP_JavaSentence](#RuleBasedNLP_JavaSentence)
@@ -96,13 +98,59 @@ There are five main R functions in this package:
 * [MachineLearningNLP](#MachineLearningNLP)
 * [runMlMethod](#runMlMethod)
 
-These functions together creates the workflow for the NLP system for the LIRE project.
+These functions together creates the workflow for the NLP system for the LIRE project. 
+
+In this tutorial we will through each part of the pipeline.
 
 <a name="Preprocessing"></a>
 
 ## Preprocessing
 
 The purpose of this section is isolate the different sections in a radiology report, so that we can use the Finding and Impression sections for the rest of the pipeline.
+
+<a name="SectionSegmentation"></a>
+
+### SectionSegmentation
+
+This function takes in a data frame, and segments the ```imagereporttext``` column into the following sections: ```History```, ```Exam```, ```Comparison```, ```Technique```, ```Body```, ```Impression```, ```Datetime```. Some of these sections may be empty. This code is developed and validated ONLY for the four LIRE sites:
+
+* site = 1: Kaiser Permanente Washington (previously Group Health)
+* site = 2: Kaiser Permanente Northen California
+* site = 3: Henry Ford
+* site = 4: Mayo Clinic
+
+The default is ```site = 2```. If you are NOT using LIRE reports, the algorithm may be inaccurate.
+
+Example usage:
+```{r}
+
+### This is fake data.
+text.df <- data.frame(patientID = c("W231", "W2242", "W452", "5235"),
+                           examID = c("631182", "1226", "2090", "1939"),
+                           siteID = c(2,2,2,2),
+                           imageTypeID = c(1,3,1,3),
+                           imagereporttext = c("** HISTORY **: Progressive radicular symptoms for 8 weeks Comparison study: None 
+                                               ** FINDINGS **: Dextroconvex scoliosis with apex at L3. 
+                                               ** IMPRESSION **: Scoliosis present.",
+                                               "** FINDINGS **: Disk height loss is present focally. 
+                                               ** IMPRESSION **:  Mild to moderate broad-based disc bulge.",
+                                               "** FINDINGS **: canal stenosis and mild narrowing of the left latera. 
+                                               ** IMPRESSION **: mild bilateral foraminal narrowing.",
+                                               "** FINDINGS **: Disc unremarkable. 
+                                               ** IMPRESSION **:  Foraminal stenosis."))
+
+
+segmented.reports <- SectionSegmentation(text.df, site = 2)
+View(segmented.reports)
+
+```
+
+
+
+
+
+
+
 
 <a name="MainR"></a>
 
