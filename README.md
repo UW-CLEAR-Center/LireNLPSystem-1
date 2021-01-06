@@ -38,6 +38,8 @@ devtools::install_github("chethanjjj/LireNLPSystem")
 library(LireNLPSystem)
 ```
 
+For the install, you may need to use the updated version of tidyselect (1.1.0) and recipes (0.1.15) if you're coming across installation errors.
+
 For the demo, you should also have the following installed:
 ```{r}
 install.packages("readr")
