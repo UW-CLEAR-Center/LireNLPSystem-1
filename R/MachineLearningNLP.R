@@ -37,12 +37,16 @@ MachineLearningNLP <- function(finding.list,
     X <- text.dfm %>%
       left_join(regex.df.wide, by = grouping_var) %>%
       mutate(Intercept = 1) %>% # Add intercept
-      select(one_of(c("Intercept", as.character(modelFile$feature_name))))
+      select(one_of(c("Intercept", as.character(modelFile$feature_name)))) # select the features shared by finding weights and this feature matrix
 
     betahat <- modelFile %>% # betahat is the estimated coefficients from machine-learning models
       mutate(feature_name = as.character(feature_name)) %>%
       filter(feature_name %in%  c("Intercept", colnames(X)))
-
+    
+    # reorder features
+    X = X[,order(colnames(X))]
+    betahat = betahat %>% arrange(feature_name)
+    
     stopifnot(all(betahat$feature_name == colnames(X))) # names of matrix & vector match?
     print(paste("Num non-zero feature weights =",dim(modelFile)[1]-1))
     print(paste("Num in this feature matirx =",dim(betahat)[1]))
