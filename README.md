@@ -286,7 +286,7 @@ text.dfm <- unigrams %>%
 
 ### Controlled Vocabulary
 
--INSERT INFO-
+https://github.com/vpejaver/UMLS-concept-assertion-mapper
 
 <a name="TrainTest"></a>
 
