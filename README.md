@@ -187,9 +187,6 @@ Note that negex can only be 1 if regex is 1.
 
 Example usage:
 ```{r}
-### Create unique identifier for each report: For LIRE data, it is patientID + examID
-segmented.reports <- segmented.reports %>%
-  dplyr::mutate(imageid = paste(patientID, examID, sep = "_"))
 
 ### This is the list of LIRE findings
 finding.list <- c("spondylolisthesis",
@@ -257,15 +254,15 @@ It will return a data frame based on the document-feature matrix (dfm) object: r
 
 Example usage:
 ```{r}
-unigrams = CreateTextFeatures(as.data.frame(unannotatedReports),
+unigrams = CreateTextFeatures(as.data.frame(segmented.reports),
                                id_col = "imageid",
                                text.cols = c("body","impression"),
                                n_gram_length = 1)
-bigrams = CreateTextFeatures(as.data.frame(unannotatedReports),
+bigrams = CreateTextFeatures(as.data.frame(segmented.reports),
                               id_col = "imageid",
                               text.cols = c("body","impression"),
                               n_gram_length = 2)
-trigrams = CreateTextFeatures(as.data.frame(unannotatedReports),
+trigrams = CreateTextFeatures(as.data.frame(segmented.reports),
                                id_col = "imageid",
                                text.cols = c("body","impression"),
                                n_gram_length = 3)
@@ -279,7 +276,27 @@ ngrams = unigrams %>%
 
 ### Document Embeddings
 
-Unlike ngrams, where we represent reports with a one-hot encoding of their words, we intead represent with an embedding, by training a simple neural network to associate a document to it's words. In this pipeline, we have already created two 2 pretrained doc2vec models that a user can use. 1) [MIMIC](https://www.nature.com/articles/sdata201635) radiology reports and 2) other reports in the LIRE study. Check the `/python` directory for these pretrained models.
+Unlike ngrams, where we represent reports with a one-hot encoding of their words, we instead represent with an embedding, by training a simple neural network to associate a document to it's words. In this pipeline, we have already created two 2 pretrained doc2vec models that a user can use. 1) [MIMIC](https://www.nature.com/articles/sdata201635) radiology reports and 2) other reports in the LIRE study. Check the `/python` directory for these pretrained models.
+
+To apply do2vec models to our data, we need to combine the `body` and `impression` together and write to a file.
+```{r}
+segmented.reports$text = segmented.reports$text = paste0(segmented.reports$body, " " ,segmented.reports$impression)
+write.csv(segmented.reports, "reports.csv")
+```
+
+We then load this report into python to run the doc2vec model
+```{python}
+import gensim
+import pandas as pd
+import numpy as np
+
+reports = pd.read_csv("reports.csv")
+
+
+```
+
+
+We then apply 
 
 <a name="ControlledVocabulary"></a>
 
