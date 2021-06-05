@@ -132,7 +132,7 @@ Example usage:
 ```{r}
 
 ### This is fake data.
-text.df <- data.frame(patientID = c("W231", "W2242", "W452", "5235"),
+text.df <- data.frame(imageid = c("W231", "W2242", "W452", "5235"),
                            examID = c("631182", "1226", "2090", "1939"),
                            siteID = c(2,2,2,2),
                            imageTypeID = c(1,3,1,3),
@@ -257,22 +257,27 @@ It will return a data frame based on the document-feature matrix (dfm) object: r
 
 Example usage:
 ```{r}
-unigrams <- CreateTextFeatures(as.data.frame(segmented.reports),  
-                               id_col = "imageid", 
-                               text.cols = c("body","impression"),
+unigrams = CreateTextFeatures(as.data.frame(unannotatedReports),
+                               id_col = "imageid",
+                               text.cols = c("processed_findings","processed_impression"),
+                               min_doc_prop = 0.005,
+                               max_doc_prop = 0.95,
                                n_gram_length = 1)
-bigrams <- CreateTextFeatures(as.data.frame(segmented.reports),  
-                               id_col = "imageid", 
-                               text.cols = c("body","impression"),
-                               n_gram_length = 2)
-trigrams <- CreateTextFeatures(as.data.frame(segmented.reports),  
-                               id_col = "imageid", 
-                               text.cols = c("body","impression"),
+bigrams = CreateTextFeatures(as.data.frame(unannotatedReports),
+                              id_col = "imageid",
+                              text.cols = c("processed_findings","processed_impression"),
+                              min_doc_prop = 0.005,
+                              max_doc_prop = 0.95,
+                              n_gram_length = 2)
+trigrams = CreateTextFeatures(as.data.frame(unannotatedReports),
+                               id_col = "imageid",
+                               text.cols = c("processed_findings","processed_impression"),
+                               min_doc_prop = 0.005,
+                               max_doc_prop = 0.95,
                                n_gram_length = 3)
-
-text.dfm <- unigrams %>%
-  inner_join(bigrams, by = "imageid") %>%
-  inner_join(trigrams, by = "imageid")
+unannotatedNgrams = unigrams %>%
+                    inner_join(bigrams, by = "imageid") %>%
+                    inner_join(trigrams, by = "imageid")
 
 ```
 
