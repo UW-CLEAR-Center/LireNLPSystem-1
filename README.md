@@ -259,21 +259,15 @@ Example usage:
 ```{r}
 unigrams = CreateTextFeatures(as.data.frame(unannotatedReports),
                                id_col = "imageid",
-                               text.cols = c("processed_findings","processed_impression"),
-                               min_doc_prop = 0.005,
-                               max_doc_prop = 0.95,
+                               text.cols = c("body","impression"),
                                n_gram_length = 1)
 bigrams = CreateTextFeatures(as.data.frame(unannotatedReports),
                               id_col = "imageid",
-                              text.cols = c("processed_findings","processed_impression"),
-                              min_doc_prop = 0.005,
-                              max_doc_prop = 0.95,
+                              text.cols = c("body","impression"),
                               n_gram_length = 2)
 trigrams = CreateTextFeatures(as.data.frame(unannotatedReports),
                                id_col = "imageid",
-                               text.cols = c("processed_findings","processed_impression"),
-                               min_doc_prop = 0.005,
-                               max_doc_prop = 0.95,
+                               text.cols = c("body","impression"),
                                n_gram_length = 3)
 ngrams = unigrams %>%
                     inner_join(bigrams, by = "imageid") %>%
