@@ -275,7 +275,7 @@ trigrams = CreateTextFeatures(as.data.frame(unannotatedReports),
                                min_doc_prop = 0.005,
                                max_doc_prop = 0.95,
                                n_gram_length = 3)
-unannotatedNgrams = unigrams %>%
+ngrams = unigrams %>%
                     inner_join(bigrams, by = "imageid") %>%
                     inner_join(trigrams, by = "imageid")
 
