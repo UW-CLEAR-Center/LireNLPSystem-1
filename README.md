@@ -286,13 +286,23 @@ write.csv(segmented.reports, "reports.csv")
 
 We then load this report into python to run the doc2vec model
 ```{python}
+# import libraries
 import gensim
 import pandas as pd
 import numpy as np
+from /python/documentVector import documentVectorFeatures
 
+# load the reports
 reports = pd.read_csv("reports.csv")
 
+# load model
+model = gensim.models.doc2vec.Doc2Vec.load("/python/mimicDocumentEmbedding.model")
 
+# get the embeddings for our reports
+embeddingTable = documentVectorFeatures(reports)
+
+# write
+embeddingTable.to_csv("reports.csv", index=False)
 ```
 
 
