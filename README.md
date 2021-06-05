@@ -305,8 +305,11 @@ embeddingTable = documentVectorFeatures(reports)
 embeddingTable.to_csv("reports.csv", index=False)
 ```
 
+We then load this table back into R
 
-We then apply 
+```{r}
+documentEmbeddings = read.csv("reports.csv")
+```
 
 <a name="ControlledVocabulary"></a>
 
