@@ -279,7 +279,7 @@ ngrams = unigrams %>%
 
 ### Document Embeddings
 
--INSERT INFO-
+Unlike ngrams, where we represent reports with a one-hot encoding of their words, we intead represent with an embedding, by training a simple neural network to associate a document to it's words. In this pipeline, we have already created two 2 pretrained doc2vec models that a user can use. 1) [MIMIC](https://www.nature.com/articles/sdata201635) radiology reports and 2) other reports in the LIRE study.
 
 <a name="ControlledVocabulary"></a>
 
