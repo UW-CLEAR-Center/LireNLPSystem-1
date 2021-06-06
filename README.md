@@ -321,7 +321,62 @@ https://github.com/vpejaver/UMLS-concept-assertion-mapper
 
 ## Train/Test
 
--INSERT INFO-
+Now that we have our different representations of the radiology reports. We can choose with representation to go ahead and use for training. For this example, let's use the rules (report level regex and negex results) and n-garms
+
+```{r}
+# combine the rules and n-grams together
+featureMatrix = rules.nlp.df %>% inner_join(ngrams, by="imageid")
+
+# ML METHOD SETUP
+MLMETHOD = "glmnet" # elastic net logistic regression
+METRIC = "auc" # Can also use "f1" for optimization using F1-score
+myControl = trainControl(method = "cv", 
+                         number = 10,
+                         search = "random",
+                         verboseIter = TRUE, # Change to FALSE if don't want output training log
+                         returnData = TRUE,
+                         returnResamp = "final",
+                         savePredictions = "final",
+                         classProbs = TRUE,
+                         summaryFunction = aucSummary, # custom AUC loss function instead of default misclassification error
+                         selectionFunction = "best",
+                         preProcOptions = c("center", "scale"),
+                         predictionBounds = rep(FALSE, 2),
+                         seeds = NA,
+                         trim = TRUE,
+                         allowParallel = TRUE)
+
+# split data into train and test (using a random split in this example)
+set.seed(1)
+n = nrow(featureMatrix)
+testSample = sample(1:n, 0.2*n) # 20% held out for testing
+devSample = setdiff(1:n, testSample)
+trainID = featureMatrix$imageid[devSample]
+testID = featureMatrix$imageid[testSample]
+
+# finding of interest
+finding = "disc_height_loss"
+
+
+# Remove regex features that are not for the specified finding name
+colsRemove = names(featureMatrix)[which(grepl(paste("(?<!",finding,")_(r|n)egex", sep=""), names(featureMatrix), perl = TRUE))]
+X = featureMatrix[, !names(featureMatrix) %in% colsRemove]
+
+# run the model
+myResult = runMLMethod(finding = finding, 
+                       featureMatrix = X, 
+                       outcome = outcome.df, 
+                       trainID = trainID, 
+                       testID = testID, 
+                       metric = METRIC, 
+                       mlmethod = MLMETHOD,
+                       myControl = myControl,
+                       "path/to/output/results")
+
+# vi
+
+
+```
 
 <a name="runMlMethod"></a>
 
