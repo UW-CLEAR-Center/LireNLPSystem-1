@@ -357,11 +357,24 @@ testID = featureMatrix$imageid[testSample]
 # finding of interest
 finding = "disc_height_loss"
 
+# let's also say you have an accompanying dataframe for the labels for each report
+outcome.df <- data.frame(imageid = c("W231", "W2242", "W452", "5235"),
+                         examID = c("631182", "1226", "2090", "1939"),
+                         siteID = c(2,2,2,2),
+                         imageTypeID = c(1,3,1,3),
+                         disc_height_loss = c(1, 0, 1, 0))
+
 
 # Remove regex features that are not for the specified finding name
 colsRemove = names(featureMatrix)[which(grepl(paste("(?<!",finding,")_(r|n)egex", sep=""), names(featureMatrix), perl = TRUE))]
 X = featureMatrix[, !names(featureMatrix) %in% colsRemove]
+```
 
+<a name="runMlMethod"></a>
+
+### runMlMethod
+
+```{r}
 # run the model
 myResult = runMLMethod(finding = finding, 
                        featureMatrix = X, 
@@ -372,17 +385,8 @@ myResult = runMLMethod(finding = finding,
                        mlmethod = MLMETHOD,
                        myControl = myControl,
                        "path/to/output/results")
-
-# vi
-
-
 ```
-
-<a name="runMlMethod"></a>
-
-### runMlMethod
-
--INSERT INFO-
+`myResults` is a list of three 3 dataframes: training and test performance metrics, training and test predictions, and the features and intercept with coefficients and the cutoff for predicting positive and engative group.
 
 <a name="Weights"></a>
 
