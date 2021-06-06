@@ -408,7 +408,7 @@ At the minimum, report level regex/negex and N-grams in section are required. Th
 
 Example usage:
 ```{r}
-### This is the same text.dfm in the demo.
+### This is the same ngrams in the demo.
 ### Need to make sure that the correct prefixes BODY and IMP are used!
 colnames(ngrams) <- gsub("IMPRESSION", "IMP", colnames(text.dfm))
 
