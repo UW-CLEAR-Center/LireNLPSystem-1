@@ -324,6 +324,23 @@ https://github.com/vpejaver/UMLS-concept-assertion-mapper
 Now that we have our different representations of the radiology reports. We can choose with representation to go ahead and use for training. For this example, let's use the rules (report level regex and negex results) and n-garms
 
 ```{r}
+
+#### This series of code transform numeric site and imageTypeID (modality) into indicator matrices
+ftr <- segmented.reports %>% 
+  dplyr::select(imageid, siteID, imageTypeID) %>%
+  dplyr::rename(site = siteID,
+                modality = imageTypeID) %>%
+  dplyr::mutate(modality = ifelse(modality == 1, "XR", "MR")) %>%
+  dplyr::mutate_all(as.factor)
+
+site.and.modality <- predict(dummyVars(imageid ~ ., data = ftr), newdata = ftr) %>%
+  as.data.frame() %>%
+  dplyr::mutate(imageid = ftr$imageid)
+colnames(site.and.modality) <- gsub("\\.", "_", colnames(site.and.modality))
+
+ngrams = ngrams %>%
+  left_join(site.and.modality, by = "imageid")
+
 # combine the rules and n-grams together
 featureMatrix = regex.df.wide %>% inner_join(ngrams, by="imageid")
 
