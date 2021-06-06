@@ -325,7 +325,7 @@ Now that we have our different representations of the radiology reports. We can 
 
 ```{r}
 # combine the rules and n-grams together
-featureMatrix = rules.nlp.df %>% inner_join(ngrams, by="imageid")
+featureMatrix = regex.df.wide %>% inner_join(ngrams, by="imageid")
 
 # ML METHOD SETUP
 MLMETHOD = "glmnet" # elastic net logistic regression
@@ -410,7 +410,7 @@ Example usage:
 ```{r}
 ### This is the same text.dfm in the demo.
 ### Need to make sure that the correct prefixes BODY and IMP are used!
-colnames(text.dfm) <- gsub("IMPRESSION", "IMP", colnames(text.dfm))
+colnames(ngrams) <- gsub("IMPRESSION", "IMP", colnames(text.dfm))
 
 #### This series of code transform numeric site and imageTypeID (modality) into indicator matrices
 ftr <- segmented.reports %>% 
@@ -425,14 +425,14 @@ site.and.modality <- predict(dummyVars(imageid ~ ., data = ftr), newdata = ftr) 
   dplyr::mutate(imageid = ftr$imageid)
 colnames(site.and.modality) <- gsub("\\.", "_", colnames(site.and.modality))
 
-text.dfm <- text.dfm %>%
+ngrams <- ngrams %>%
   left_join(site.and.modality, by = "imageid")
 
 ### Apply machine-learning model tuned parameters
 data(ml_feature_weights)
 
 ml.nlp.df <- MachineLearningNLP(finding.list, 
-                         text.dfm, 
+                         ngrams, 
                          regex.df.wide,
                          ml_feature_weights,
                          grouping_var = "imageid")
@@ -440,8 +440,7 @@ ml.nlp.df <- MachineLearningNLP(finding.list,
 ### Combine rules and ML into single data.frame
 nlp.df <- segmented.reports %>% dplyr::select(imageid, siteID, imageTypeID) %>%
   left_join(rules.nlp.df, by = "imageid") %>%
-  left_join(ml.nlp.df, by = "imageid") %>%
-  separate(imageid, into = c("patientID", "examID"), sep = "_")
+  left_join(ml.nlp.df, by = "imageid")
 
 View(nlp.df)
 ```
