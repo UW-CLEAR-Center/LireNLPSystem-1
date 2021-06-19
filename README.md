@@ -92,7 +92,7 @@ You may also try searching for "configuring rJava on Mac" on the internet.
 
 ## Overview
 
-The purpose of the pipeline is to classify your reports for the 26 findings described in [Tan et. al](https://www.academicradiology.org/article/S1076-6332(18)30121-1/fulltext), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list. The pipeline will *preprocess* and *featurize* your reports. However, after these steps there are two possible paths to go down. You can either *train/test* your own model with it's own feature weights or *apply our weights*. This is a newer version of the original pipeline (https://github.com/wlktan/LireNLPSystem) that implements a different way to segment sentences before applying rules.
+The purpose of the pipeline is to classify your reports for the 26 findings described in [Tan et. al](https://www.academicradiology.org/article/S1076-6332(18)30121-1/fulltext), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list. The pipeline will *preprocess* and *featurize* your reports. However, after these steps there are two possible paths to go down. You can either *train/test* your own model with it's own feature weights or *apply our weights*. This is a newer version of the original pipeline (https://github.com/wlktan/LireNLPSystem) that implements a different way to segment sentences (https://www.tutorialspoint.com/opennlp/opennlp_parsing_the_sentences.htm) before applying rules.
 
 ![](images/Pipeline.png "Pipeline")
 
