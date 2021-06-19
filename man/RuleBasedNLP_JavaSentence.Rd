@@ -4,12 +4,15 @@
 \alias{RuleBasedNLP_JavaSentence}
 \title{Interface to rules-based NLP (Java pipeline) to obtain sentence level predictions.}
 \usage{
-RuleBasedNLP_JavaSentence(segmented.reports, imageid = "imageid",
-  bodyText = "body", impressionText = "impression",
-  findings_longstring = paste(c("spondylolisthesis", "annular_fissure",
-  "disc_bulge", "disc_degeneration", "disc_desiccation",
-  "disc_height_loss", "disc_protrusion", "facet_degeneration"), collapse =
-  ";"))
+RuleBasedNLP_JavaSentence(
+  segmented.reports,
+  imageid = "imageid",
+  bodyText = "body",
+  impressionText = "impression",
+  findings_longstring = paste(c("spondylolisthesis", "annular_fissure", "disc_bulge",
+    "disc_degeneration", "disc_desiccation", "disc_height_loss", "disc_protrusion",
+    "facet_degeneration"), collapse = ";")
+)
 }
 \arguments{
 \item{segmented.reports}{The input data frame}

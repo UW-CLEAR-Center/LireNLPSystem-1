@@ -15,11 +15,49 @@
 #'
 
 RuleBasedNLP <- function(regex.df.java){
-
+  
   regex.df.java <- as.data.frame(regex.df.java) %>%
     mutate_at(c("regex", "negex"), as.character) %>%
     mutate_at(c("regex", "negex"), as.numeric)
-
+  
+  
+  # check if any reports have one section (body or impression)
+  #   this happens because the sentence segmenter in RulesBasedNLP_JavaSentence does not find a sentence
+  #   in that section so doesn't return anything. By NOT checking and adding the missing section with
+  #   regex and negex = 0, this function will return NA for that report.
+  singleSectionCount = regex.df.java %>% 
+                       dplyr::group_by(imageid, Finding) %>% 
+                       summarise(sectionCount = length(unique(`Section of sentence`)), .groups="keep") %>%
+                       dplyr::filter(sectionCount == 1)
+  singleSectionTypes = regex.df.java %>% 
+                       dplyr::group_by(imageid, Finding) %>% 
+                       summarise(sections = unique(`Section of sentence`), .groups="keep") %>% 
+                       dplyr::filter(imageid %in% singleSectionCount$imageid & Finding %in% singleSectionCount$Finding) %>%
+                       as.data.frame(.)
+  # add missing section (body or impression) with regex and negex 0
+  if (nrow(singleSectionTypes) > 0) {
+    columns = colnames(regex.df.java)
+    for (row in 1:nrow(singleSectionTypes)) {
+      imageid = singleSectionTypes[row, "imageid"] %>% as.character(.)
+      finding = singleSectionTypes[row, "Finding"] %>% as.character(.)
+      section = singleSectionTypes[row, "sections"] %>% as.character(.)
+      df = data.frame(matrix(ncol=length(columns), nrow=1))
+      colnames(df) = columns
+      df$imageid = imageid
+      df$Finding = finding
+      df$Sentence = ""
+      df$regex = 0
+      df$negex = 0
+      df$keyword = ""
+      if (section == "body") {
+        df$`Section of sentence` = "impression"
+      } else {
+        df$`Section of sentence` = "body"
+      }
+      regex.df.java = rbind(regex.df.java, df)
+    }
+  }
+  
   ###### Data frame of regex & negex variables for input into machine-learning
   temp <- regex.df.java %>%
     select(-Sentence, -keyword) %>%

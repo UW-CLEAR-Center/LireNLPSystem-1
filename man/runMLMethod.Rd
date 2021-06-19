@@ -4,8 +4,17 @@
 \alias{runMLMethod}
 \title{This function elastic net logistic regression for a given finding and feature matrix}
 \usage{
-runMLMethod(finding, featureMatrix, outcome, trainID, testID, metric,
-  mlmethod, myControl, outpath)
+runMLMethod(
+  finding,
+  featureMatrix,
+  outcome,
+  trainID,
+  testID,
+  metric,
+  mlmethod,
+  myControl,
+  outpath
+)
 }
 \arguments{
 \item{finding}{string indicating finding of interest}

@@ -4,10 +4,19 @@
 \alias{SectionSegmentation}
 \title{Section Segmentation of Radiology Text Reports}
 \usage{
-SectionSegmentation(df, site = NULL, hst_rgx = NULL, exam_rgx = NULL,
-  comparison_rgx = NULL, technique_rgx = NULL, body_rgx = NULL,
-  imp_rgx = NULL, datetime_rgx = NULL,
-  liretext_rgx = "(Among\\\\s*people\\\\s*(over|under|between)\\\\s*the\\\\s*age\\\\s*of.*$)|(Some\\\\s*findings\\\\s*are\\\\s*so\\\\s*common.*$)|(The\\\\s*following\\\\s*findings\\\\s*are\\\\s*so\\\\s*common\\\\s*in\\\\s*normal.*$)")
+SectionSegmentation(
+  df,
+  site = NULL,
+  hst_rgx = NULL,
+  exam_rgx = NULL,
+  comparison_rgx = NULL,
+  technique_rgx = NULL,
+  body_rgx = NULL,
+  imp_rgx = NULL,
+  datetime_rgx = NULL,
+ 
+    liretext_rgx = "(Among\\\\s*people\\\\s*(over|under|between)\\\\s*the\\\\s*age\\\\s*of.*$)|(Some\\\\s*findings\\\\s*are\\\\s*so\\\\s*common.*$)|(The\\\\s*following\\\\s*findings\\\\s*are\\\\s*so\\\\s*common\\\\s*in\\\\s*normal.*$)"
+)
 }
 \arguments{
 \item{df}{Input data frame}

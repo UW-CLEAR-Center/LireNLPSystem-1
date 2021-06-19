@@ -4,8 +4,13 @@
 \alias{MachineLearningNLP}
 \title{Apply machine-learning NLP for the given list of findings}
 \usage{
-MachineLearningNLP(finding.list, text.dfm, regex.df.wide,
-  ml_feature_weights, grouping_var = "imageid")
+MachineLearningNLP(
+  finding.list,
+  text.dfm,
+  regex.df.wide,
+  ml_feature_weights,
+  grouping_var = "imageid"
+)
 }
 \arguments{
 \item{finding.list}{The vector of string of findings}
