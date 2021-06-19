@@ -131,23 +131,25 @@ The default is ```site = 2```. If you are NOT using LIRE reports, the algorithm 
 Example usage:
 ```{r}
 
-### This is fake data.
+### This is fake data. In this example, we've labelled each report for an outcome that will be used by our machine learning model.
 text.df <- data.frame(imageid = c("W231", "W2242", "W452", "5235"),
-                           examID = c("631182", "1226", "2090", "1939"),
-                           siteID = c(2,2,2,2),
-                           imageTypeID = c(1,3,1,3),
-                           imagereporttext = c("** HISTORY **: Progressive radicular symptoms for 8 weeks Comparison study: None 
-                                               ** FINDINGS **: Dextroconvex scoliosis with apex at L3. 
-                                               ** IMPRESSION **: Scoliosis present.",
-                                               "** FINDINGS **: Disk height loss is present focally. 
-                                               ** IMPRESSION **:  Mild to moderate broad-based disc bulge.",
-                                               "** FINDINGS **: canal stenosis and mild narrowing of the left latera. 
-                                               ** IMPRESSION **: mild bilateral foraminal narrowing.",
-                                               "** FINDINGS **: Disc unremarkable. 
-                                               ** IMPRESSION **:  Foraminal stenosis."))
+                      examID = c("631182", "1226", "2090", "1939"),
+                      siteID = c(2,2,2,1),
+                      imageTypeID = c(1,3,1,3),
+                      imagereporttext = c("** HISTORY **: Progressive radicular symptoms for 8 weeks Comparison study: None 
+                                          ** FINDINGS **: Dextroconvex scoliosis with apex at L3. 
+                                          ** IMPRESSION **: Scoliosis present.",
+                                          "** FINDINGS **: Disk height loss is present focally. 
+                                          ** IMPRESSION **:  Mild to moderate broad-based disc bulge.",
+                                          "** FINDINGS **: canal stenosis and mild narrowing of the left latera. 
+                                          ** IMPRESSION **: mild bilateral foraminal narrowing.",
+                                          "Findings : Disc unremarkable. 
+                                          Impression :  Foraminal stenosis."),
+                      disc_height_loss = c(1, 0, 1, 0))
 
 
-segmented.reports <- SectionSegmentation(text.df, site = 2)
+segmented.reports = bind_rows(SectionSegmentation(text.df %>% filter(siteID == 2), site = 2),
+                              SectionSegmentation(text.df %>% filter(siteID == 1), site = 1))
 View(segmented.reports)
 
 ```
@@ -363,24 +365,12 @@ myControl = trainControl(method = "cv",
                          trim = TRUE,
                          allowParallel = TRUE)
 
-# split data into train and test (using a random split in this example)
-set.seed(1)
-n = nrow(featureMatrix)
-testSample = sample(1:n, 0.2*n) # 20% held out for testing
-devSample = setdiff(1:n, testSample)
-trainID = featureMatrix$imageid[devSample]
-testID = featureMatrix$imageid[testSample]
+# split data into train and test
+trainID = c("5235", "W2242", "W231")
+testID = c("W452")
 
 # finding of interest
 finding = "disc_height_loss"
-
-# let's also say you have an accompanying dataframe for the labels for each report
-outcome.df <- data.frame(imageid = c("W231", "W2242", "W452", "5235"),
-                         examID = c("631182", "1226", "2090", "1939"),
-                         siteID = c(2,2,2,2),
-                         imageTypeID = c(1,3,1,3),
-                         disc_height_loss = c(1, 0, 1, 0))
-
 
 # Remove regex features that are not for the specified finding name
 colsRemove = names(featureMatrix)[which(grepl(paste("(?<!",finding,")_(r|n)egex", sep=""), names(featureMatrix), perl = TRUE))]
@@ -395,7 +385,7 @@ X = featureMatrix[, !names(featureMatrix) %in% colsRemove]
 # run the model
 myResult = runMLMethod(finding = finding, 
                        featureMatrix = X, 
-                       outcome = outcome.df, 
+                       outcome = outcome.df %>% dplyr::filter(imageid, siteID, imageTypeID, disc_height_loss), 
                        trainID = trainID, 
                        testID = testID, 
                        metric = METRIC, 
@@ -445,7 +435,7 @@ colnames(site.and.modality) <- gsub("\\.", "_", colnames(site.and.modality))
 ngrams <- ngrams %>%
   left_join(site.and.modality, by = "imageid")
 
-### Apply machine-learning model tuned parameters
+### Apply machine-learning model tuned parameters, or you can use your own weights.
 data(ml_feature_weights)
 
 ml.nlp.df <- MachineLearningNLP(finding.list, 
