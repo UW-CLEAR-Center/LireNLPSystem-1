@@ -399,7 +399,7 @@ myResult = runMLMethod(finding = finding,
 
 ## Apply Weights
 
-The purpose of this section is to apply weights to your feature matrix and classify each report.
+The purpose of this section is to apply weights to your feature matrix and classify each report. The current weights that we have are built using imageTypeID, siteID, rules (regex and negex), and n-grams.
 
 <a name="MachineLearningNLP"></a>
 
@@ -417,7 +417,7 @@ Example usage:
 ```{r}
 ### This is the same ngrams in the demo.
 ### Need to make sure that the correct prefixes BODY and IMP are used!
-colnames(ngrams) <- gsub("IMPRESSION", "IMP", colnames(text.dfm))
+colnames(ngrams) <- gsub("IMPRESSION", "IMP", colnames(ngrams))
 
 #### This series of code transform numeric site and imageTypeID (modality) into indicator matrices
 ftr <- segmented.reports %>% 
