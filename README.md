@@ -92,7 +92,7 @@ You may also try searching for "configuring rJava on Mac" on the internet.
 
 ## Overview
 
-The purpose of the pipeline is to classify your reports for the 26 findings described in [Tan et. al](https://www.academicradiology.org/article/S1076-6332(18)30121-1/fulltext), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list. The pipeline will *preprocess* and *featurize* your reports. However, after these steps there are two possible paths to go down. You can either *train/test* your own model with it's own feature weights or *apply our weights*.
+The purpose of the pipeline is to classify your reports for the 26 findings described in [Tan et. al](https://www.academicradiology.org/article/S1076-6332(18)30121-1/fulltext), as well as 10 additional ```rare and serious``` findings. Please see File ```lire_finding_matrix.xlsx``` file, Sheet ```finding_matrix``` Column ```finding_string``` for the complete list. The pipeline will *preprocess* and *featurize* your reports. However, after these steps there are two possible paths to go down. You can either *train/test* your own model with it's own feature weights or *apply our weights*. This is a newer version of the original pipeline (https://github.com/wlktan/LireNLPSystem) that implements a different way to segment sentences before applying rules.
 
 ![](images/Pipeline.png "Pipeline")
 
@@ -131,23 +131,25 @@ The default is ```site = 2```. If you are NOT using LIRE reports, the algorithm 
 Example usage:
 ```{r}
 
-### This is fake data.
-text.df <- data.frame(patientID = c("W231", "W2242", "W452", "5235"),
-                           examID = c("631182", "1226", "2090", "1939"),
-                           siteID = c(2,2,2,2),
-                           imageTypeID = c(1,3,1,3),
-                           imagereporttext = c("** HISTORY **: Progressive radicular symptoms for 8 weeks Comparison study: None 
-                                               ** FINDINGS **: Dextroconvex scoliosis with apex at L3. 
-                                               ** IMPRESSION **: Scoliosis present.",
-                                               "** FINDINGS **: Disk height loss is present focally. 
-                                               ** IMPRESSION **:  Mild to moderate broad-based disc bulge.",
-                                               "** FINDINGS **: canal stenosis and mild narrowing of the left latera. 
-                                               ** IMPRESSION **: mild bilateral foraminal narrowing.",
-                                               "** FINDINGS **: Disc unremarkable. 
-                                               ** IMPRESSION **:  Foraminal stenosis."))
+### This is fake data. In this example, we've labelled each report for an outcome that will be used by our machine learning model.
+text.df <- data.frame(imageid = c("W231", "W2242", "W452", "5235"),
+                      examID = c("631182", "1226", "2090", "1939"),
+                      siteID = c(2,2,2,1),
+                      imageTypeID = c(1,3,1,3),
+                      imagereporttext = c("** HISTORY **: Progressive radicular symptoms for 8 weeks Comparison study: None 
+                                          ** FINDINGS **: Dextroconvex scoliosis with apex at L3. 
+                                          ** IMPRESSION **: Scoliosis present.",
+                                          "** FINDINGS **: Disk height loss is present focally. 
+                                          ** IMPRESSION **:  Mild to moderate broad-based disc bulge.",
+                                          "** FINDINGS **: canal stenosis and mild narrowing of the left latera. 
+                                          ** IMPRESSION **: mild bilateral foraminal narrowing.",
+                                          "Findings : Disc unremarkable. 
+                                          Impression :  Foraminal stenosis."),
+                      disc_height_loss = c(1, 0, 1, 0))
 
 
-segmented.reports <- SectionSegmentation(text.df, site = 2)
+segmented.reports = bind_rows(SectionSegmentation(text.df %>% filter(siteID == 2), site = 2),
+                              SectionSegmentation(text.df %>% filter(siteID == 1), site = 1))
 View(segmented.reports)
 
 ```
@@ -187,9 +189,6 @@ Note that negex can only be 1 if regex is 1.
 
 Example usage:
 ```{r}
-### Create unique identifier for each report: For LIRE data, it is patientID + examID
-segmented.reports <- segmented.reports %>%
-  dplyr::mutate(imageid = paste(patientID, examID, sep = "_"))
 
 ### This is the list of LIRE findings
 finding.list <- c("spondylolisthesis",
@@ -257,22 +256,21 @@ It will return a data frame based on the document-feature matrix (dfm) object: r
 
 Example usage:
 ```{r}
-unigrams <- CreateTextFeatures(as.data.frame(segmented.reports),  
-                               id_col = "imageid", 
+unigrams = CreateTextFeatures(as.data.frame(segmented.reports),
+                               id_col = "imageid",
                                text.cols = c("body","impression"),
                                n_gram_length = 1)
-bigrams <- CreateTextFeatures(as.data.frame(segmented.reports),  
-                               id_col = "imageid", 
-                               text.cols = c("body","impression"),
-                               n_gram_length = 2)
-trigrams <- CreateTextFeatures(as.data.frame(segmented.reports),  
-                               id_col = "imageid", 
+bigrams = CreateTextFeatures(as.data.frame(segmented.reports),
+                              id_col = "imageid",
+                              text.cols = c("body","impression"),
+                              n_gram_length = 2)
+trigrams = CreateTextFeatures(as.data.frame(segmented.reports),
+                               id_col = "imageid",
                                text.cols = c("body","impression"),
                                n_gram_length = 3)
-
-text.dfm <- unigrams %>%
-  inner_join(bigrams, by = "imageid") %>%
-  inner_join(trigrams, by = "imageid")
+ngrams = unigrams %>%
+                    inner_join(bigrams, by = "imageid") %>%
+                    inner_join(trigrams, by = "imageid")
 
 ```
 
@@ -280,7 +278,40 @@ text.dfm <- unigrams %>%
 
 ### Document Embeddings
 
--INSERT INFO-
+Unlike ngrams, where we represent reports with a one-hot encoding of their words, we instead represent with an embedding, by training a simple neural network to associate a document to it's words. In this pipeline, we have already created two 2 pretrained doc2vec models that a user can use. 1) [MIMIC](https://www.nature.com/articles/sdata201635) radiology reports and 2) other reports in the LIRE study. Check the `/python` directory for these pretrained models.
+
+To apply do2vec models to our data, we need to combine the `body` and `impression` together and write to a file.
+```{r}
+segmented.reports$text = segmented.reports$text = paste0(segmented.reports$body, " " ,segmented.reports$impression)
+write.csv(segmented.reports, "reports.csv")
+```
+
+We then load this report into python to run the doc2vec model
+```{python}
+# import libraries
+import gensim
+import pandas as pd
+import numpy as np
+from /python/documentVector import documentVectorFeatures
+
+# load the reports
+reports = pd.read_csv("reports.csv")
+
+# load model
+model = gensim.models.doc2vec.Doc2Vec.load("/python/mimicDocumentEmbedding.model")
+
+# get the embeddings for our reports
+embeddingTable = documentVectorFeatures(reports)
+
+# write
+embeddingTable.to_csv("reports.csv", index=False)
+```
+
+We then load this table back into R
+
+```{r}
+documentEmbeddings = read.csv("reports.csv")
+```
 
 <a name="ControlledVocabulary"></a>
 
@@ -292,19 +323,83 @@ https://github.com/vpejaver/UMLS-concept-assertion-mapper
 
 ## Train/Test
 
--INSERT INFO-
+Now that we have our different representations of the radiology reports. We can choose with representation to go ahead and use for training. For this example, let's use the rules (report level regex and negex results) and n-garms
+
+```{r}
+
+#### This series of code transform numeric site and imageTypeID (modality) into indicator matrices
+ftr <- segmented.reports %>% 
+  dplyr::select(imageid, siteID, imageTypeID) %>%
+  dplyr::rename(site = siteID,
+                modality = imageTypeID) %>%
+  dplyr::mutate(modality = ifelse(modality == 1, "XR", "MR")) %>%
+  dplyr::mutate_all(as.factor)
+
+site.and.modality <- predict(dummyVars(imageid ~ ., data = ftr), newdata = ftr) %>%
+  as.data.frame() %>%
+  dplyr::mutate(imageid = ftr$imageid)
+colnames(site.and.modality) <- gsub("\\.", "_", colnames(site.and.modality))
+
+ngrams = ngrams %>%
+  left_join(site.and.modality, by = "imageid")
+
+# combine the rules and n-grams together
+featureMatrix = regex.df.wide %>% inner_join(ngrams, by="imageid")
+
+# ML METHOD SETUP
+MLMETHOD = "glmnet" # elastic net logistic regression
+METRIC = "auc" # Can also use "f1" for optimization using F1-score
+myControl = trainControl(method = "cv", 
+                         number = 10,
+                         search = "random",
+                         verboseIter = TRUE, # Change to FALSE if don't want output training log
+                         returnData = TRUE,
+                         returnResamp = "final",
+                         savePredictions = "final",
+                         classProbs = TRUE,
+                         summaryFunction = aucSummary, # custom AUC loss function instead of default misclassification error
+                         selectionFunction = "best",
+                         preProcOptions = c("center", "scale"),
+                         predictionBounds = rep(FALSE, 2),
+                         seeds = NA,
+                         trim = TRUE,
+                         allowParallel = TRUE)
+
+# split data into train and test
+trainID = c("5235", "W2242", "W231")
+testID = c("W452")
+
+# finding of interest
+finding = "disc_height_loss"
+
+# Remove regex features that are not for the specified finding name
+colsRemove = names(featureMatrix)[which(grepl(paste("(?<!",finding,")_(r|n)egex", sep=""), names(featureMatrix), perl = TRUE))]
+X = featureMatrix[, !names(featureMatrix) %in% colsRemove]
+```
 
 <a name="runMlMethod"></a>
 
 ### runMlMethod
 
--INSERT INFO-
+```{r}
+# run the model
+myResult = runMLMethod(finding = finding, 
+                       featureMatrix = X, 
+                       outcome = outcome.df %>% dplyr::filter(imageid, siteID, imageTypeID, disc_height_loss), 
+                       trainID = trainID, 
+                       testID = testID, 
+                       metric = METRIC, 
+                       mlmethod = MLMETHOD,
+                       myControl = myControl,
+                       "path/to/output/results")
+```
+`myResults` is a list of three 3 dataframes: training and test performance metrics, training and test predictions, and the features and intercept with coefficients and the cutoff for predicting positive and engative group.
 
 <a name="Weights"></a>
 
 ## Apply Weights
 
-The purpose of this section is to apply weights to your feature matrix and classify each report.
+The purpose of this section is to apply weights to your feature matrix and classify each report. The current weights that we have are built using imageTypeID, siteID, rules (regex and negex), and n-grams.
 
 <a name="MachineLearningNLP"></a>
 
@@ -320,9 +415,9 @@ At the minimum, report level regex/negex and N-grams in section are required. Th
 
 Example usage:
 ```{r}
-### This is the same text.dfm in the demo.
+### This is the same ngrams in the demo.
 ### Need to make sure that the correct prefixes BODY and IMP are used!
-colnames(text.dfm) <- gsub("IMPRESSION", "IMP", colnames(text.dfm))
+colnames(ngrams) <- gsub("IMPRESSION", "IMP", colnames(ngrams))
 
 #### This series of code transform numeric site and imageTypeID (modality) into indicator matrices
 ftr <- segmented.reports %>% 
@@ -337,14 +432,14 @@ site.and.modality <- predict(dummyVars(imageid ~ ., data = ftr), newdata = ftr) 
   dplyr::mutate(imageid = ftr$imageid)
 colnames(site.and.modality) <- gsub("\\.", "_", colnames(site.and.modality))
 
-text.dfm <- text.dfm %>%
+ngrams <- ngrams %>%
   left_join(site.and.modality, by = "imageid")
 
-### Apply machine-learning model tuned parameters
+### Apply machine-learning model tuned parameters, or you can use your own weights.
 data(ml_feature_weights)
 
 ml.nlp.df <- MachineLearningNLP(finding.list, 
-                         text.dfm, 
+                         ngrams, 
                          regex.df.wide,
                          ml_feature_weights,
                          grouping_var = "imageid")
@@ -352,8 +447,7 @@ ml.nlp.df <- MachineLearningNLP(finding.list,
 ### Combine rules and ML into single data.frame
 nlp.df <- segmented.reports %>% dplyr::select(imageid, siteID, imageTypeID) %>%
   left_join(rules.nlp.df, by = "imageid") %>%
-  left_join(ml.nlp.df, by = "imageid") %>%
-  separate(imageid, into = c("patientID", "examID"), sep = "_")
+  left_join(ml.nlp.df, by = "imageid")
 
 View(nlp.df)
 ```
